@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego del dino</title>
+    <style>
+        body {
+            background-color: #005bbb;
+            color: white;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        .game-container {
+            position: relative;
+            width: 500px;
+            height: 200px;
+            border-bottom: 3px solid white;
+            overflow: hidden;
+            margin: 50px auto;
+        }
+        .dino {
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            position: absolute;
+            bottom: 0;
+            left: 50px;
+        }
+        .jump {
+            animation: jump 0.5s linear;
+        }
+        @keyframes jump {
+            0% { bottom: 0; }
+            50% { bottom: 100px; }
+            100% { bottom: 0; }
+        }
+        .obstacle {
+            width: 20px;
+            height: 40px;
+            background-color: red;
+            position: absolute;
+            bottom: 0;
+            left: 500px;
+            animation: move 2s infinite linear;
+        }
+        @keyframes move {
+            from { left: 500px; }
+            to { left: -20px; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Jueguito uno</h1>
+    <p>Presiona cualquier tecla para saltar jijo</p>
+    <div class="game-container">
+        <div class="dino" id="dino"></div>
+        <div class="obstacle" id="obstacle"></div>
+    </div>
+    <p id="tiempo">Tiempo: 0s</p>
+    <p id="mensaje"></p>
+    
+    <script>
+        let dino = document.getElementById("dino");
+        let obstacle = document.getElementById("obstacle");
+        let isJumping = false;
+        let tiempo = 0;
+        let tiempoInterval;
+
+        document.addEventListener("keydown", function() {
+            if (!isJumping) {
+                isJumping = true;
+                dino.classList.add("jump");
+                setTimeout(() => {
+                    dino.classList.remove("jump");
+                    isJumping = false;
+                }, 500);
+            }
+        });
+
+        function checkCollision() {
+            let dinoRect = dino.getBoundingClientRect();
+            let obstacleRect = obstacle.getBoundingClientRect();
+
+            if (
+                dinoRect.right > obstacleRect.left &&
+                dinoRect.left < obstacleRect.right &&
+                dinoRect.bottom >= obstacleRect.top
+            ) {
+                document.getElementById("mensaje").innerText = `¡Perdiste! Sobreviviste ${tiempo} segundos(rewewi). Recarga para intentarlo otra vez.`;
+                obstacle.style.animation = "none";
+                clearInterval(collisionCheck);
+                clearInterval(tiempoInterval);
+            }
+        }
+
+        let collisionCheck = setInterval(checkCollision, 10);
+
+        function contarTiempo() {
+            tiempo++;
+            document.getElementById("tiempo").innerText = `Tiempo: ${tiempo}s`;
+        }
+
+        tiempoInterval = setInterval(contarTiempo, 1000);
+    </script>
+</body>
+</html>
+
